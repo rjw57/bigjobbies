@@ -20,6 +20,9 @@ wrap python3 -m virtualenv -p "$(which python3)" /tmp/venv
 info Activating virtualenv
 . /tmp/venv/bin/activate
 
+wrap python --version
+wrap pip --version
+
 # A bit of a hack to treat a single string as a single item list
 get_values() (
     shyaml get-values-0 "$@" <"${config_file}" 2>/dev/null || \
