@@ -30,6 +30,8 @@ wrap nvidia-smi
 section Environment variables
 wrap env
 
+section Parse job configuration
+
 config_file=/repo/.jobbies.yaml
 info "Parsing ${config_file} file"
 if [ ! -f "${config_file}" ]; then
@@ -44,6 +46,7 @@ if [ -z ${language} ]; then
     exit 1
 fi
 
+info 'Job language is "${language}"'
 case "${language}" in
     "python") exec ./python_job.sh
     ;;
