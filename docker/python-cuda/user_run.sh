@@ -22,8 +22,6 @@ export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
 # set up cache directory in a persistent location
 export XDG_CACHE_HOME=/workspace/cache
 
-section Information on environment
-
 # show information on which GPU we're using
 section GPU information
 wrap nvidia-smi
