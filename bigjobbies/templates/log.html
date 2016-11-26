@@ -1,10 +1,10 @@
 {% extends "_layout/default.html" %}
 
-{% block title %}Job {{ job_number }} log{% endblock %}
+{% block title %}Job #{{ job_number }} log{% endblock %}
 
 {% block content %}
 
-<h1>Log for job number {{ job_number }}</h1>
+<h1>Log for job #{{ job_number }}</h1>
 
 <ul class="collapsible" data-collapsible="accordion">
   {% for section in sections %}
