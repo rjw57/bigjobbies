@@ -4,7 +4,8 @@ import shutil
 import tempfile
 
 from dateutil.parser import parse as date_parse
-from flask import abort, request, render_template, jsonify, current_app
+from flask import abort, request, render_template, current_app, Markup
+import markdown
 
 from .app import app
 from . import sge
@@ -117,6 +118,9 @@ def log(job_number):
     return render_template(
         'log.html', job_number=job_number, sections=sections)
 
-@app.route('/api/qstat')
-def api_qstat():
-    return jsonify(sge.qstat())
+@app.route('/help')
+def info():
+    with current_app.open_resource('markdown/info.md') as f:
+        content = Markup(markdown.markdown(f.read().decode('utf8')))
+    return render_template('markdown.html', content=content)
+

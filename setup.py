@@ -4,8 +4,9 @@ setup(
     name='bigjobbies',
     packages=find_packages(),
     install_requires=[
-        'python-dateutil',
         'flask',
+        'markdown',
+        'python-dateutil',
         'xmljson',
     ],
 )
