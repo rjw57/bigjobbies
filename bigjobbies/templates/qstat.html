@@ -8,8 +8,13 @@
 
 {% block content %}
 
+<h1>Job queue</h1>
+
+<p>This page lists the pending, running and completed jobs in the queue. There's
+no need to refresh as this page reloads itself every 15 seconds.</p>
+
 {% if running_jobs %}
-<h1>Running jobs</h1>
+<h2>Running jobs</h2>
 <table class="striped">
   <thead>
     <th>Number</th>
@@ -31,7 +36,7 @@
 {% with these_jobs = jobs | rejectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
 
-<h1>Pending jobs</h1>
+<h2>Pending jobs</h2>
 
 <table class="striped">
   <thead>
@@ -57,7 +62,7 @@
 {% with these_jobs = jobs | selectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
 
-<h1>Completed jobs</h1>
+<h2>Completed jobs</h2>
 
 <table class="striped">
   <thead>
