@@ -25,10 +25,12 @@ export XDG_CACHE_HOME=/workspace/cache
 section Information on environment
 
 # show information on which GPU we're using
-logcmd "GPU information" nvidia-smi
+section GPU information
+wrap nvidia-smi
 
 # show information on environment
-logcmd "Environment variables" env
+section Environment variables
+wrap env
 
 config_file=/repo/.jobbies.yaml
 info "Parsing ${config_file} file"
