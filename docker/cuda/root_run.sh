@@ -48,17 +48,19 @@ chown worker:worker /repo
 git_cmd="git clone --progress --depth=1 --recursive ${clone_args} '${GIT_REPO}' /repo"
 logcmd "${git_cmd}" su -c "${git_cmd}" worker
 
+config_file=/repo/.jobbies.yaml
+jobbieget="$PWD/jobbieget.py"
+get_values() ( su -s "${jobbieget}" worker -- "$@" <"${config_file}" )
+
 section Install packages
 
 # Install any packages specified by the user
-pkg_list=/repo/apt-packages.txt
-if [ -f "${pkg_list}" ]; then
-	logcmd \
-		"installing packages specified in ${pkg_list}" \
-		xargs -d '\n' apt-get -y install <"${pkg_list}"
+if [ -z "$(get_values apt)" ]; then
+	info no apt packages specified in ${config_file}
 else
-	info "no apt packages in ${pkg_list}"
-	info "add package names, one per line, to this file to install them"
+	get_values apt | logcmd \
+		"installing packages specified in ${config_file}" \
+		xargs --null apt-get -y install
 fi
 
 # Run the unprivileged side of the script

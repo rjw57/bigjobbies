@@ -50,4 +50,4 @@ NV_GPU="${X_SGE_CUDA_DEVICE}" nvidia-docker run \
 	-v /scratch:/data:ro \
 	-v /scratch/$USER:/workspace \
 	${DOCKER_RUN_ARGS} \
-	rjw57:python-cuda
+	${USER}:cuda

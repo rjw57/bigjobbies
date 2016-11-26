@@ -3,7 +3,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DOCKER_DIR=$(realpath "${DIR}/docker")
-CONTAINERS="python-cuda"
+CONTAINERS="cuda"
 
 for container in $CONTAINERS; do
 	CONTAINER_NAME="${USER}:${container}"
