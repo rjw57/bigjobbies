@@ -32,6 +32,28 @@ files. This allows you to store shared datasets, persist output and to clone
 from git repositories which are hosted within the yoshi scratch space and not in
 the cloud.
 
+Configuration is done via a ``.jobbies.yaml`` file in the repository root. This
+is intentionally similar to a Travis CI ``.travis.yaml`` file and the simplest
+Python job is configured as:
+
+<pre>
+language: python
+script: python job.py
+</pre>
+
+In addition, the ``install`` key may be used to specify custom installation
+methods. By default, we use ``pip install .``. A larger example:
+
+<pre>
+language: python:
+install:
+    - pip install -r requirements.txt
+    - pip install .
+script:
+    - python job.py
+    - echo Finished
+</pre>
+
 ## Directories
 
 The containers have some restricted access to the local filesystem by way of a

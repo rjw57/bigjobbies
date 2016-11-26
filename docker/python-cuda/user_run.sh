@@ -22,49 +22,31 @@ export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
 # set up cache directory in a persistent location
 export XDG_CACHE_HOME=/workspace/cache
 
-# save any extra arguments to script
-cli_args="$@"
-
-section Check environment
-
-# where to find pip
-PIP=${PIP:-pip3}
-if [ -z "${PIP}" ]; then
-	error "pip not found on PATH. Aborting"
-	exit 1
-fi
-
-# check tox is installed
-if [ -z "$(which tox)" ]; then
-	info "tox not on PATH. Installing via pip."
-	wrap "${PIP}" install --user tox
-fi
-
-if [ -z "$(which tox)" ]; then
-	error "tox not found on PATH. Ensure it is installed." >&2
-	exit 1
-fi
-
-info "project directory in container is $PWD"
-
-# change to repo directory
-cd /repo
+section Information on environment
 
 # show information on which GPU we're using
-info "GPU information:"
-wrap nvidia-smi
+logcmd "GPU information" nvidia-smi
 
 # show information on environment
-info "environment variables:"
-wrap env
+logcmd "Environment variables" env
 
-# check there is a tox file
-if [ ! -f tox.ini ]; then
-	error "No tox.ini file found. Aborting." >&2
-	exit 1
+config_file=/repo/.jobbies.yaml
+info "Parsing ${config_file} file"
+if [ ! -f "${config_file}" ]; then
+    error The file ${config_file} was not found.
+    error The job cannot proceed without it.
+    exit 1
 fi
 
-section Run job
+language=$(shyaml get-value language '' <"${config_file}")
+if [ -z ${language} ]; then
+    error No language specified in ${config_file}
+    exit 1
+fi
 
-wrap tox $@
-
+case "${language}" in
+    "python") exec ./python_job.sh
+    ;;
+    *) error "Unknown language: ${language}"
+    ;;
+esac

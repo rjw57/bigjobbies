@@ -9,10 +9,11 @@ VOLUME /workspace
 
 # set up a basic dev. environment and utilities required for scripts
 RUN apt-get -y update && \
-    apt-get -y install git build-essential python python3 python3-pip
+    apt-get -y install git build-essential python python3 python3-pip \
+        python3-yaml python3-docopt
+
+RUN pip3 install shyaml
 
 # Copy the run script into the container
-COPY user_run.sh .
-COPY root_run.sh .
-COPY util.sh .
+COPY *.sh *.py ./
 ENTRYPOINT ./root_run.sh
