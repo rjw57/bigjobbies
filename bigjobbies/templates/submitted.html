@@ -1,12 +1,14 @@
 {% extends "_layout/default.html" %}
+
+{% block head %}
+<meta http-equiv="refresh" content="15; url={{ url_for('qstat') }}">
+{% endblock %}
+
 {% block content %}
-<h1>Job submitted</h1>
+<h1>Job #{{ job_num }} submitted</h1>
 
 <p>
-  Your job has been submitted with job number <strong>{{ job_num }}</strong>
+  Your job has been submitted. This page will automatically redirect to the
+  <a href="{{ url_for('qstat') }}">job queue</a> in 15 seconds.
 </p>
-
-<a href="{{ url_for('qstat') }}" class="waves-effect waves-light btn">
-  See job queue
-</a>
 {% endblock %}

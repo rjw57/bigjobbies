@@ -46,7 +46,7 @@ if [ -z ${language} ]; then
     exit 1
 fi
 
-info 'Job language is "${language}"'
+info "Job language is \"${language}\""
 case "${language}" in
     "python") exec ./python_job.sh
     ;;
