@@ -10,6 +10,12 @@ config_file=/repo/.jobbies.yaml
 # Get utility functions
 . util.sh
 
+# This is to make sure we don't use the Python within the virtualenv
+system_python=$(which python3)
+jobbieget="$PWD/jobbieget.py"
+
+get_values() ( "${system_python}" "${jobbieget}" "$@" <"${config_file}" )
+
 cd /repo
 
 section Setup virtualenv
@@ -22,12 +28,6 @@ info Activating virtualenv
 
 wrap python --version
 wrap pip --version
-
-# A bit of a hack to treat a single string as a single item list
-get_values() (
-    shyaml get-values-0 "$@" <"${config_file}" 2>/dev/null || \
-        (shyaml get-value "$@" <"${config_file}" && printf '\0')
-)
 
 section Install
 
