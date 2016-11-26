@@ -1,9 +1,37 @@
 {% extends "_layout/default.html" %}
+
+{% block title %}Job {{ job_number }} log{% endblock %}
+
 {% block content %}
 
 <h1>Log for job number {{ job_number }}</h1>
 
-<pre class="z-depth-2 grey lighten-4 grey-text text-darken-3"
-     style="padding: 1em"><code>{{ log_text }}</code></pre>
+<ul class="collapsible" data-collapsible="accordion">
+  {% for section in sections %}
+  <li class="grey grey-text darken-3 text-lighten-3">
+    <div class="white grey-text text-darken-3 collapsible-header {{ 'active' if loop.last else '' }}">
+      {{ section.title }}
+      <span class="grey-text text-lighten-1" style="float: right">
+        {{ section.line_count }}
+        {{ 'lines' if section.line_count != 1 else 'line' }}
+      </span>
+    </div>
+    <div class="collapsible-body">
+    <pre><code>{#
+    #}{% for blk in section.blocks %}{#
+      #}{% if blk.type == 'stderr' %}{#
+        #}<div class="red-text">{#
+      #}{% elif blk.type == 'command' %}{#
+        #}<div class="teal-text">{#
+      #}{% elif blk.type == 'info' %}{#
+        #}<div class="blue-text text-lighten-2">{#
+      #}{% else %}<div>{% endif %}{#
+      #}<div style="padding: 0 1em">{{ blk.text|join('') }}</div>{#
+      #}</div>{#
+    #}{% endfor %}{#
+    #}</code></pre></div>
+  </li>
+  {% endfor %}
+</ul>
 
 {% endblock %}

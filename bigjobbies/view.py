@@ -1,3 +1,4 @@
+import itertools
 import os
 import shutil
 import tempfile
@@ -83,16 +84,38 @@ def qstat():
 
     return render_template('qstat.html', jobs=jobs, running_jobs=running_jobs)
 
+PREFIXES = {
+    'O:': 'stdout', 'E:': 'stderr', 'I:': 'info', 'C:': 'command',
+    'S:': 'section',
+}
+
 @app.route('/log/<int:job_number>')
 def log(job_number):
     path = log_path(job_number)
     if path is None:
         abort(404)
 
+    sections = []
+    current_section = dict(blocks=[], title='Log', line_count=0)
+    current_section_title = ''
     with open(path) as f:
-        log_text = f.read()
+        line_prefix = lambda l: l[:2] if l[:2] in PREFIXES else ''
+        for k, lines in itertools.groupby(f, line_prefix):
+            lines = [l[len(k):] for l in lines]
+            if PREFIXES.get(k) == 'section':
+                if len(current_section['blocks']) > 0:
+                    sections.append(current_section)
+                current_section = dict(
+                    blocks=[], title=''.join(lines).strip(), line_count=0)
+            else:
+                current_section['blocks'].append(
+                    dict(type=PREFIXES.get(k), text=lines))
+                current_section['line_count'] += len(lines)
+    if len(current_section['blocks']) > 0:
+        sections.append(current_section)
 
-    return render_template('log.html', job_number=job_number, log_text=log_text)
+    return render_template(
+        'log.html', job_number=job_number, sections=sections)
 
 @app.route('/api/qstat')
 def api_qstat():

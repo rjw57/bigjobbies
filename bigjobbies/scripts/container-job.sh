@@ -46,7 +46,7 @@ NV_GPU="${X_SGE_CUDA_DEVICE}" nvidia-docker run \
 	-e SGE_TASK_FIRST="${SGE_TASK_FIRST}" -e SGE_TASK_LAST="${SGE_TASK_LAST}" \
 	-e SGE_TASK_STEPSIZE="${SGE_TASK_STEPSIZE}" -e SGR_ARCH="${SGR_ARCH}" \
 	-e DOCKER_USER_UID=${UID} \
-	-e DOCKER_USER_GID \
+	-e DOCKER_USER_GID=${DOCKER_USER_GID} \
 	-v /scratch:/data:ro \
 	-v /scratch/$USER:/workspace \
 	${DOCKER_RUN_ARGS} \
