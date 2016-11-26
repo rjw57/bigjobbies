@@ -40,7 +40,10 @@ if [ ! -f "${config_file}" ]; then
     exit 1
 fi
 
-language=$(shyaml get-value language '' <"${config_file}")
+jobbieget="$PWD/jobbieget.py"
+get_values() ( "${jobbieget}" "$@" <"${config_file}" )
+
+language=$(get_values language)
 if [ -z ${language} ]; then
     error No language specified in ${config_file}
     exit 1
