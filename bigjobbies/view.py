@@ -1,14 +1,15 @@
 import itertools
 import os
-import shutil
-import tempfile
 
 from dateutil.parser import parse as date_parse
-from flask import abort, request, render_template, current_app, Markup
+from flask import (
+    abort, request, render_template, current_app, Markup, jsonify
+)
 import markdown
 
 from .app import app
 from . import sge
+from . import engine
 
 def log_path(job_number):
     log_dir = current_app.config['LOG_DIR']
@@ -21,32 +22,9 @@ def log_path(job_number):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        log_dir = current_app.config['LOG_DIR']
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-
-        job_env = {
-            'GIT_REPO': request.values['gitrepo'],
-            'GIT_BRANCH': request.values.get('gitbranch', ''),
-        }
-
-        qsub_args = [
-            '-e', os.path.join(log_dir, '$JOB_ID.log'),
-            '-o', os.path.join(log_dir, '$JOB_ID.log'),
-        ]
-
-        for k, v in job_env.items():
-            qsub_args.extend([
-                '-v', '{}={}'.format(k, v),
-            ])
-
-        js = current_app.open_resource('scripts/container-job.sh')
-        td = tempfile.TemporaryDirectory(prefix='bigjobbies')
-        with js as js, td as td:
-            job_path = os.path.join(td, 'job.sh')
-            with open(job_path, 'wb') as f:
-                shutil.copyfileobj(js, f)
-            job_num, job_name = sge.qsub(job_path, qsub_args)
+        job_num, job_name = engine.submitjob(
+            gitrepo=request.values['gitrepo'], **request.values
+        )
         return render_template('submitted.html', job_num=job_num)
     return render_template('index.html')
 
@@ -124,3 +102,10 @@ def info():
         content = Markup(markdown.markdown(f.read().decode('utf8')))
     return render_template('markdown.html', content=content)
 
+@app.route('/api/qstat')
+def api_qstat():
+    return jsonify(sge.qstat())
+
+@app.route('/api/gpuinfo')
+def api_gpuinfo():
+    return jsonify(engine.gpuinfo())
