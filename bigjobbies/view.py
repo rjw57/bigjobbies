@@ -69,6 +69,11 @@ def parse_qstat():
 def qstat():
     return render_template('qstat.html', **parse_qstat())
 
+@app.route('/gpuinfo')
+def gpuinfo():
+    return render_template(
+        'gpuinfo.html', smi=engine.gpuinfo().get('nvidia_smi_log'))
+
 @app.route('/qstat/update')
 def qstat_update():
     return render_template('qstat_dynamic.html', **parse_qstat())
