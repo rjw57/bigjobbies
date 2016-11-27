@@ -3,13 +3,6 @@
 {% block content %}
 <h1>GPU information</h1>
 
-<p>
-  <a class="waves-effect waves-light btn" href="{{ url_for('api_gpuinfo') }}">
-    <i class="material-icons right">computer</i>
-    JSON version
-  </a>
-</p>
-
 <div id="dynamic">
 {% include "gpuinfo_dynamic.html" %}
 </div>

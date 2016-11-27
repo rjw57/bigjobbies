@@ -3,7 +3,7 @@ import os
 
 from dateutil.parser import parse as date_parse
 from flask import (
-    abort, request, render_template, current_app, Markup, jsonify,
+    abort, request, render_template, current_app, Markup,
     redirect, flash, url_for, Response
 )
 import markdown
@@ -35,32 +35,33 @@ def parse_qstat():
     qstat_out = sge.qstat()
 
     running_jobs = []
-    for queue in qstat_out['job_info']['queue_info']['Queue-List']:
-        job_list = queue.get('job_list', None)
-        if job_list is None:
+    for queue in qstat_out.queue_info['Queue-List']:
+        try:
+            job_list = queue.job_list
+        except AttributeError:
             continue
-        if job_list.get('@state') != 'running':
+        if job_list is None or job_list.get('state', '') != 'running':
             continue
         running_jobs.append(dict(
-            queue=queue['name']['$'],
-            number=job_list['JB_job_number']['$'],
+            queue=queue.name,
+            number=job_list.JB_job_number,
             state='running',
-            owner=job_list['JB_owner']['$'],
-            start_time=date_parse(job_list['JAT_start_time']['$']),
+            owner=job_list.JB_owner,
+            start_time=date_parse(job_list.JAT_start_time.text),
         ))
 
     def parse_job(job):
         return dict(
-            number=job['JB_job_number']['$'],
-            state=job['@state'],
-            owner=job['JB_owner']['$'],
-            sub_time=date_parse(job['JB_submission_time']['$']),
-            has_log=log_path(job['JB_job_number']['$']) is not None,
+            number=job.JB_job_number,
+            state=job.get('state'),
+            owner=job.JB_owner,
+            sub_time=date_parse(job.JB_submission_time.text),
+            has_log=log_path(job.JB_job_number) is not None,
         )
 
     jobs = [
         parse_job(j)
-        for j in qstat_out['job_info']['job_info']['job_list']
+        for j in qstat_out.job_info.job_list
     ]
 
     return dict(jobs=jobs, running_jobs=running_jobs)
@@ -76,12 +77,12 @@ def qstat_update():
 @app.route('/gpuinfo')
 def gpuinfo():
     return render_template(
-        'gpuinfo.html', smi=engine.gpuinfo().get('nvidia_smi_log'))
+        'gpuinfo.html', smi=engine.gpuinfo())
 
 @app.route('/gpuinfo/update')
 def gpuinfo_update():
     return render_template(
-        'gpuinfo_dynamic.html', smi=engine.gpuinfo().get('nvidia_smi_log'))
+        'gpuinfo_dynamic.html', smi=engine.gpuinfo())
 
 PREFIXES = {
     'O:': 'stdout', 'E:': 'stderr', 'I:': 'info', 'C:': 'command',
@@ -129,11 +130,3 @@ def info():
     with current_app.open_resource('markdown/info.md') as f:
         content = Markup(markdown.markdown(f.read().decode('utf8')))
     return render_template('markdown.html', content=content)
-
-@app.route('/api/qstat')
-def api_qstat():
-    return jsonify(sge.qstat())
-
-@app.route('/api/gpuinfo')
-def api_gpuinfo():
-    return jsonify(engine.gpuinfo())

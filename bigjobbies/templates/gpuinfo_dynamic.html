@@ -2,37 +2,63 @@
 <div class="card grey lighten-4">
   <div class="card-content">
     <div class="card-title">
-      {{ gpu.product_name['$'] }}
-      ({{ loop.index0 }})
+      Card {{ loop.index0 }}:
+      {{ gpu.product_name }}
     </div>
 
     <table>
-      <tbody>
+      <thead>
         <tr>
-          <th>Mem. usage</th>
+          <th>Memory usage</th>
           <th>Power usage</th>
           <th>GPU utilisation</th>
           <th>Temperature</th>
           <th>Bus ID</th>
         </tr>
+      </thead>
+      <tbody>
         <tr>
           <td>
-            {{ gpu.fb_memory_usage.used['$'] }} /
-            {{ gpu.fb_memory_usage.total['$'] }}
+            {{ gpu.fb_memory_usage.used }} /
+            {{ gpu.fb_memory_usage.total }}
           </td>
           <td>
-            {{ gpu.power_readings.power_draw['$'] }} /
-            {{ gpu.power_readings.power_limit['$'] }}
+            {{ gpu.power_readings.power_draw }} /
+            {{ gpu.power_readings.power_limit }}
           </td>
-          <td>{{ gpu.utilization.gpu_util['$'] }}</td>
+          <td>{{ gpu.utilization.gpu_util }}</td>
           <td>
-            {{ gpu.temperature.gpu_temp['$'] }} /
-            {{ gpu.temperature.gpu_temp_max_threshold['$'] }}
+            {{ gpu.temperature.gpu_temp }} /
+            {{ gpu.temperature.gpu_temp_max_threshold }}
           </td>
-          <td>{{ gpu.pci.pci_bus_id['$'] }}</td>
+          <td>{{ gpu.pci.pci_bus_id }}</td>
         </tr>
       </tbody>
     </table>
+
+    {% if gpu.processes.process_info %}
+    <div class="card-title">Process table</div>
+    <table>
+      <thead>
+        <tr>
+          <th>PID</th>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Used memory</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for process in gpu.processes.process_info %}
+        <tr>
+          <td>{{ process.pid }}</td>
+          <td>{{ process.type }}</td>
+          <td>{{ process.process_name }}</td>
+          <td>{{ process.used_memory }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
   </div>
 </div>
 {% endfor %}

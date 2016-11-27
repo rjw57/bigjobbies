@@ -2,16 +2,15 @@ import os
 import shutil
 import tempfile
 import subprocess
-from xml.etree.ElementTree import fromstring
 
 from flask import current_app
-from xmljson import badgerfish as bf
+from lxml import objectify
 
 from . import sge
 
 def gpuinfo():
-    return bf.data(fromstring(subprocess.check_output([
-        'nvidia-smi', '-q', '-x'])))
+    return objectify.fromstring(subprocess.check_output([
+        'nvidia-smi', '-q', '-x']))
 
 def submitjob(gitrepo, **kwargs):
     log_dir = current_app.config['LOG_DIR']

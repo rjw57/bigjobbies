@@ -1,17 +1,15 @@
 import re
 import subprocess
-from xml.etree.ElementTree import fromstring
 
-from xmljson import badgerfish as bf
+from lxml import objectify
 
 class SGEError(RuntimeError):
     pass
 
 def qstat():
-    xml = fromstring(subprocess.check_output([
+    return objectify.fromstring(subprocess.check_output([
         'qstat', '-u', '*', '-f', '-s', 'prsz', '-xml'
     ]))
-    return bf.data(xml)
 
 QSUB_PATTERN = re.compile(r'Your job ([0-9]+) \("([^"]*)"\) has been submitted')
 
