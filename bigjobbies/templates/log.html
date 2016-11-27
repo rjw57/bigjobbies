@@ -11,11 +11,11 @@
   {% for section in sections %}
   <li>
     <div class="collapsible-header {{ 'active' if loop.last else '' }}">
-      {{ section.title }}
-      <span class="grey-text text-lighten-1" style="float: right">
-        {{ section.line_count }}
-        {{ 'lines' if section.line_count != 1 else 'line' }}
+      <span class="badge">
+      {{ section.line_count }}
+      {{ 'lines' if section.line_count != 1 else 'line' }}
       </span>
+      {{ section.title }}
     </div>
     <div class="collapsible-body">
       <div style="display: table">

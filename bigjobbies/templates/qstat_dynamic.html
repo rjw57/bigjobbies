@@ -1,0 +1,76 @@
+{% if running_jobs %}
+<h2>Running jobs</h2>
+<table class="striped">
+  <thead>
+    <th>Number</th>
+    <th>Queue</th>
+    <th>Start time</th>
+    <th>Owner</th>
+  </thead>
+  <tbody>
+{% for job in running_jobs %}
+  <td>{{ job.number }}</td>
+  <td>{{ job.queue }}</td>
+  <td>{{ job.start_time }}</td>
+  <td>{{ job.owner }}</td>
+{% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% with these_jobs = jobs | rejectattr('state', 'equalto', 'zombie') | list %}
+{% if these_jobs %}
+
+<h2>Pending jobs</h2>
+
+<table class="striped">
+  <thead>
+    <th>Number</th>
+    <th>State</th>
+    <th>Submission time</th>
+    <th>Owner</th>
+  </thead>
+  <tbody>
+    {% for job in these_jobs | sort(attribute='sub_time', reverse=True) %}
+      <tr>
+        <td>{{ job.number }}</td>
+        <td>{{ job.state }}</td>
+        <td>{{ job.sub_time }}</td>
+        <td>{{ job.owner }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endwith %}
+
+{% with these_jobs = jobs | selectattr('state', 'equalto', 'zombie') | list %}
+{% if these_jobs %}
+
+<h2>Completed jobs</h2>
+
+<table class="striped">
+  <thead>
+    <th>Number</th>
+    <th>Submission time</th>
+    <th>Owner</th>
+    <th></th>
+  </thead>
+  <tbody>
+    {% for job in (these_jobs | sort(attribute='sub_time', reverse=True))[:10] %}
+      <tr>
+        <td>{{ job.number }}</td>
+        <td>{{ job.sub_time }}</td>
+        <td>{{ job.owner }}</td>
+        <td>
+          {% if job.has_log %}
+          <a href="{{ url_for('log', job_number=job.number) }}">Log</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endwith %}
+

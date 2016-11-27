@@ -3,7 +3,8 @@ import os
 
 from dateutil.parser import parse as date_parse
 from flask import (
-    abort, request, render_template, current_app, Markup, jsonify
+    abort, request, render_template, current_app, Markup, jsonify,
+    redirect, flash, url_for
 )
 import markdown
 
@@ -25,11 +26,12 @@ def index():
         job_num, job_name = engine.submitjob(
             gitrepo=request.values['gitrepo'], **request.values
         )
-        return render_template('submitted.html', job_num=job_num)
+
+        flash('Job #{} submitted'.format(job_num))
+        return redirect(url_for('qstat'))
     return render_template('index.html')
 
-@app.route('/qstat')
-def qstat():
+def parse_qstat():
     qstat_out = sge.qstat()
 
     running_jobs = []
@@ -61,7 +63,15 @@ def qstat():
         for j in qstat_out['job_info']['job_info']['job_list']
     ]
 
-    return render_template('qstat.html', jobs=jobs, running_jobs=running_jobs)
+    return dict(jobs=jobs, running_jobs=running_jobs)
+
+@app.route('/qstat')
+def qstat():
+    return render_template('qstat.html', **parse_qstat())
+
+@app.route('/qstat/update')
+def qstat_update():
+    return render_template('qstat_dynamic.html', **parse_qstat())
 
 PREFIXES = {
     'O:': 'stdout', 'E:': 'stderr', 'I:': 'info', 'C:': 'command',

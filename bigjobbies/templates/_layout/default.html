@@ -24,5 +24,17 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript"
 src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <script>
+      $(document).ready(function() {
+        {% for message in messages %}
+        Materialize.toast('{{ message }}', 5000);
+        {% endfor %}
+      });
+    </script>
+    {% endif %}
+    {% endwith %}
+    {% block script %}{% endblock %}
   </body>
 </html>
