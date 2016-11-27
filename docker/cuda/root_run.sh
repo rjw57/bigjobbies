@@ -58,6 +58,7 @@ section Install packages
 if [ -z "$(get_values apt)" ]; then
 	info no apt packages specified in ${config_file}
 else
+	export DEBIAN_FRONTEND=noninteractive
 	get_values apt | logcmd \
 		"installing packages specified in ${config_file}" \
 		xargs --null apt-get -y install
