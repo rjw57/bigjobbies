@@ -10,43 +10,24 @@
   </a>
 </p>
 
-{% for gpu in smi.gpu %}
-<div class="card grey lighten-4">
-  <div class="card-content">
-    <div class="card-title">
-      {{ gpu.product_name['$'] }}
-      ({{ loop.index0 }})
-    </div>
-
-    <table>
-      <tbody>
-        <tr>
-          <th>Mem. usage</th>
-          <th>Power usage</th>
-          <th>GPU utilisation</th>
-          <th>Temperature</th>
-          <th>Bus ID</th>
-        </tr>
-        <tr>
-          <td>
-            {{ gpu.fb_memory_usage.used['$'] }} /
-            {{ gpu.fb_memory_usage.total['$'] }}
-          </td>
-          <td>
-            {{ gpu.power_readings.power_draw['$'] }} /
-            {{ gpu.power_readings.power_limit['$'] }}
-          </td>
-          <td>{{ gpu.utilization.gpu_util['$'] }}</td>
-          <td>
-            {{ gpu.temperature.gpu_temp['$'] }} /
-            {{ gpu.temperature.gpu_temp_max_threshold['$'] }}
-          </td>
-          <td>{{ gpu.pci.pci_bus_id['$'] }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div id="dynamic">
+{% include "gpuinfo_dynamic.html" %}
 </div>
-{% endfor %}
 
+{% endblock %}
+
+{% block script %}
+<script >
+$(document).ready(function(){
+
+function refresh() {
+  $.get('{{ url_for('gpuinfo_update') }}', function(data) {
+    $('#dynamic').html(data);
+    window.setTimeout(refresh, 1000);
+  });
+}
+window.setTimeout(refresh, 1000);
+
+});
+</script>
 {% endblock %}
