@@ -11,12 +11,19 @@
   <body>
     <nav>
       <div class="nav-wrapper container">
-        <a href="{{ url_for('index') }}" class="brand-logo">Yoshi</a>
+        <a id="logo-container" href="#" class="brand-logo">Big Jobbies</a>
+        <a href="#" data-activates="mobile-menu" class="button-collapse">
+          <i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="{{ url_for('index') }}">Submit job</a></li>
           <li><a href="{{ url_for('qstat') }}">Job queue</a></li>
           <li><a href="{{ url_for('info') }}">Help</a></li>
         </ul>
+        <ul class="side-nav" id="mobile-menu">
+          <li><a href="{{ url_for('index') }}">Submit job</a></li>
+          <li><a href="{{ url_for('qstat') }}">Job queue</a></li>
+          <li><a href="{{ url_for('info') }}">Help</a></li>
+        <ul>
       </div>
     </nav>
 
@@ -24,14 +31,17 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript"
 src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script>
+    $(document).ready(function() { $('.button-collapse').sideNav(); });
+    </script>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <script>
-      $(document).ready(function() {
-        {% for message in messages %}
-        Materialize.toast('{{ message }}', 5000);
-        {% endfor %}
-      });
+    $(document).ready(function() {
+      {% for message in messages %}
+      Materialize.toast('{{ message }}', 5000);
+      {% endfor %}
+    });
     </script>
     {% endif %}
     {% endwith %}
