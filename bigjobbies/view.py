@@ -102,7 +102,7 @@ def log(job_number):
     with open(path) as f:
         line_prefix = lambda l: l[:2] if l[:2] in PREFIXES else ''
         for k, lines in itertools.groupby(f, line_prefix):
-            lines = [l[len(k):] for l in lines]
+            lines = [l[len(k):].rstrip() for l in lines]
             if PREFIXES.get(k) == 'section':
                 if len(current_section['blocks']) > 0:
                     sections.append(current_section)

@@ -7,9 +7,10 @@
 <h1>Log for job #{{ job_number }}</h1>
 
 <ul class="collapsible" data-collapsible="accordion">
+  {% set section_start = 0 %}
   {% for section in sections %}
-  <li class="grey grey-text darken-3 text-lighten-3">
-    <div class="white grey-text text-darken-3 collapsible-header {{ 'active' if loop.last else '' }}">
+  <li>
+    <div class="collapsible-header {{ 'active' if loop.last else '' }}">
       {{ section.title }}
       <span class="grey-text text-lighten-1" style="float: right">
         {{ section.line_count }}
@@ -17,20 +18,39 @@
       </span>
     </div>
     <div class="collapsible-body">
-    <pre><code>{#
-    #}{% for blk in section.blocks %}{#
-      #}{% if blk.type == 'stderr' %}{#
-        #}<div class="red-text">{#
-      #}{% elif blk.type == 'command' %}{#
-        #}<div class="teal-text">{#
-      #}{% elif blk.type == 'info' %}{#
-        #}<div class="blue-text text-lighten-2">{#
-      #}{% else %}<div>{% endif %}{#
-      #}<div style="padding: 0 1em">{{ blk.text|join('') }}</div>{#
-      #}</div>{#
-    #}{% endfor %}{#
-    #}</code></pre></div>
+      <div style="display: table">
+      {% set block_start = section_start %}
+      {% for blk in section.blocks %}
+        {% set block_loop = loop %}
+        {% for line in blk.text %}
+        <div style="display: table-row">
+          <div class="grey lighten-4 right-align grey-text text-lighten-1"
+               style="display: table-cell; padding: 0 1ex; {{
+                 'padding-top: 1ex;' if loop.first and block_loop.first else ''
+               }} {{
+                 'padding-bottom: 1ex;' if loop.last and block_loop.last else ''
+               }}">
+            <code>{{ block_start + loop.index }}</code>
+          </div>
+          <div style="display: table-cell; padding: 0 1ex">
+            {% if blk.type == 'stderr' %}
+            <span class="red-text">
+            {% elif blk.type == 'command' %}
+            <span class="teal-text">
+            {% elif blk.type == 'info' %}
+            <span class="blue-text text-darken-2">
+            {% else %}<span>{% endif %}
+              <div style="white-space: pre-wrap; word-break: break-all"><code>{{ line }}</code></div>
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+        {% set block_start = block_start + blk.text | length %}
+      {% endfor %}
+      </div>
+    </div>
   </li>
+  {% set section_start = section_start + section.line_count %}
   {% endfor %}
 </ul>
 
