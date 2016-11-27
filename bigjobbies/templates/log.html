@@ -4,7 +4,15 @@
 
 {% block content %}
 
-<h1>Log for job #{{ job_number }}</h1>
+<div style="float: right">
+  <a href="{{ url_for('log_raw', job_number=job_number) }}"
+     download="job_{{ job_number }}_log.txt"
+     class="waves-effect waves-light btn">
+    <i class="material-icons right">file_download</i>
+    Download
+  </a>
+</div>
+<h4>Log for job #{{ job_number }}</h4>
 
 <ul class="collapsible" data-collapsible="accordion">
   {% set section_start = 0 %}

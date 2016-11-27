@@ -4,7 +4,7 @@ import os
 from dateutil.parser import parse as date_parse
 from flask import (
     abort, request, render_template, current_app, Markup, jsonify,
-    redirect, flash, url_for
+    redirect, flash, url_for, Response
 )
 import markdown
 
@@ -105,6 +105,14 @@ def log(job_number):
 
     return render_template(
         'log.html', job_number=job_number, sections=sections)
+
+@app.route('/log/<int:job_number>/raw')
+def log_raw(job_number):
+    path = log_path(job_number)
+    if path is None:
+        abort(404)
+    with open(path) as f:
+        return Response(f.read(), mimetype='text/plain')
 
 @app.route('/help')
 def info():
