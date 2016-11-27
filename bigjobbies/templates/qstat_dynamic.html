@@ -35,10 +35,12 @@
   </thead>
   <tbody>
 {% for job in running_jobs %}
-  <td>{{ job.number }}</td>
-  <td>{{ job.queue }}</td>
-  <td>{{ job.start_time }}</td>
-  <td>{{ job.owner }}</td>
+  <tr>
+    <td>{{ job.number }}</td>
+    <td>{{ job.queue }}</td>
+    <td>{{ job.start_time }}</td>
+    <td>{{ job.owner }}</td>
+  </tr>
 {% endfor %}
   </tbody>
 </table>
