@@ -33,7 +33,7 @@
         {% set block_loop = loop %}
         {% for line in blk.text %}
         <div style="display: table-row">
-          <div class="grey lighten-4 right-align grey-text text-lighten-1"
+          <div class="grey lighten-3 right-align grey-text"
                style="display: table-cell; padding: 0 1ex; {{
                  'padding-top: 1ex;' if loop.first and block_loop.first else ''
                }} {{
@@ -41,7 +41,8 @@
                }}">
             <code>{{ block_start + loop.index }}</code>
           </div>
-          <div style="display: table-cell; padding: 0 1ex">
+          <div class="grey lighten-4"
+               style="width: 100%; display: table-cell; padding: 0 1ex">
             {% if blk.type == 'stderr' %}
             <span class="red-text">
             {% elif blk.type == 'command' %}
