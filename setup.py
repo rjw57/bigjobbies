@@ -10,4 +10,9 @@ setup(
         'markdown',
         'python-dateutil',
     ],
+    package_data={
+        'bigjobbies': [
+            'docker/*/*', 'scripts/*', 'templates/*', 'templates/*/*',
+        ],
+    },
 )
