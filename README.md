@@ -34,5 +34,6 @@ application is running on is 8000 and the compute server is called ``yoshi``.
 ssh -fN -L5000:localhost:8000 yoshi
 ```
 
-You can now navigate to http://localhost:5000/ in your browser and get started.
+You can now navigate to [localhost:5000](http://localhost:5000/) in your browser
+and get started.
 
