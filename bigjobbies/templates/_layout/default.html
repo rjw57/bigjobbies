@@ -11,7 +11,9 @@
   <body>
     <nav>
       <div class="nav-wrapper container">
-        <a id="logo-container" href="{{ url_for('index') }}" class="brand-logo">Big Jobbies</a>
+        <a id="logo-container" href="{{ url_for('index') }}" class="brand-logo">
+          {{ config.SITE_NAME }}
+        </a>
         <a href="#" data-activates="mobile-menu" class="button-collapse">
           <i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">

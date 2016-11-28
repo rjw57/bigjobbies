@@ -41,7 +41,7 @@ def submitjob(script, name=None, job_env={}):
         ])
 
     js = current_app.open_resource(os.path.join('scripts', script))
-    td = tempfile.TemporaryDirectory(prefix='bigjobbies')
+    td = tempfile.TemporaryDirectory(prefix=current_app.config['APP_PREFIX'])
     with js as js, td as td:
         job_path = os.path.join(td, 'job.sh')
         with open(job_path, 'wb') as f:

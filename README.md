@@ -1,19 +1,38 @@
-## Installation
+## Quick start
 
-Firstly, on the cluster machine, build the containers:
+### On the compute server
 
-```console
-$ ./build_containers.sh
-```
-
-Then install the application:
+Firstly, set up a local [virtualenv](https://virtualenv.pypa.io/en/stable/) to
+install Python packages in:
 
 ```console
-$ pip install --user .
+python -m virtualenv -p $(which python3) bigjobbies_venv
+source bigjobbies_venv/bin/activate
 ```
 
-Run via the ``flask`` command:
+Then install the application and [gunicorn](http://gunicorn.org/) web
+application runner:
 
 ```console
-$ FLASK_APPLICATION=bigjobbies flask run
+pip install gunicorn git+https://github.com/rjw57/bigjobbies#egg=bigjobbies
 ```
+
+Then start the application server. (If ``gunicorn`` complains about port 8000
+already being in use add the ``-b localhost:<portnumber>`` option with a
+different port number.)
+
+```console
+gunicorn bigjobbies:app
+```
+
+### On your local machine
+
+Start a SSH tunnel to the compute server. In this example, the port number the
+application is running on is 8000 and the compute server is called ``yoshi``.
+
+```console
+ssh -fN -L5000:localhost:8000 yoshi
+```
+
+You can now navigate to http://localhost:5000/ in your browser and get started.
+
