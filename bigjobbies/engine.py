@@ -56,6 +56,11 @@ def docker_images():
     return [im for im in cli.images()
             if tag in im.get('RepoTags', [])]
 
+def delete_images():
+    cli = docker.Client()
+    for im_id in [im['Id'] for im in docker_images()]:
+        cli.remove_image(im_id, noprune=False, force=True)
+
 def missing_images():
     """Return a sequence of image tags which are missing. (I.e. they have not
     yet been built.)

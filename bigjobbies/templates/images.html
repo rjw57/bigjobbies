@@ -47,8 +47,40 @@ container images at any time.</p>
     {% endfor %}
     </tbody>
 </table>
+
+<p>
+  <a class="waves-effect waves-light red btn" href="#delete-modal">
+    <i class="material-icons right">delete</i>
+    Delete container images
+  </a>
+</p>
+
+<div id="delete-modal" class="modal">
+  <div class="modal-content">
+    <h4>Delete all container images</h1>
+
+    <p>This will <strong>delete</strong> all the containers associated with
+    {{ config.SITE_NAME }}. Are you sure?
+    </p>
+  </div>
+  <form action="{{ url_for('delete_images') }}" method="POST">
+  <div class="modal-footer">
+    <button type="submit" class=" modal-action modal-close waves-effect
+      waves-red btn-flat">
+      Yeah! I know what I'm doing
+    </button>
+    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">
+      Actually, I didn't mean that at all
+    </a>
+  </div>
+  </form>
+</div>
 {% else %}
 <p>There are no {{ config.SITE_NAME }} Docker images on the machine.</p>
 {% endif %}
 
+{% endblock %}
+
+{% block script %}
+<script>$(document).ready(function() { $('.modal').modal(); });</script>
 {% endblock %}

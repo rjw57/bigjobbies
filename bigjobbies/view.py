@@ -73,6 +73,14 @@ def build_images():
     flash('Job #{} submitted'.format(job_num))
     return redirect(url_for('qstat'))
 
+@app.route('/images/delete', methods=['POST'])
+def delete_images():
+    if request.method != 'POST':
+        abort(403) # Forbidden
+
+    engine.delete_images()
+    return redirect(url_for('images'))
+
 def parse_qstat():
     qstat_out = sge.qstat()
 
