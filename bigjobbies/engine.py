@@ -23,8 +23,6 @@ def submitjob(script, name=None, job_env={}):
     if name is None:
         name = script
 
-    tag = [t for t in image_tags() if t.endswith(':cuda')][0]
-
     log_dir = current_app.config['LOG_DIR']
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -32,7 +30,6 @@ def submitjob(script, name=None, job_env={}):
     qsub_args = [
         '-e', os.path.join(log_dir, '$JOB_ID.log'),
         '-o', os.path.join(log_dir, '$JOB_ID.log'),
-        '-v', 'CONTAINER_TAG={}'.format(tag),
     ]
 
     for k, v in job_env.items():

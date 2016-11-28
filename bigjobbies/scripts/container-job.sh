@@ -33,9 +33,22 @@ EOL
 	exit 1
 fi
 
+if [ -z "${CONTAINER_TAG}" ]; then
+	cat >&2 <<EOL
+-- No container tag was specified.
+EOL
+	env >&2
+	exit 1
+fi
+
 # Get the user primary group id or fallback to the UID
 DOCKER_USER_GID=$(id -g)
 DOCKER_USER_GID=${DOCKER_USER_GID:-${DOCKER_USER_UID}}
+
+echo "S:Launching container"
+echo "I:GIT_REPO=${GIT_REPO}"
+echo "I:GIT_BRANCH=${GIT_BRANCH}"
+echo "I:CONTAINER_TAG=${CONTAINER_TAG}"
 
 NV_GPU="${X_SGE_CUDA_DEVICE}" nvidia-docker run \
 	--rm \

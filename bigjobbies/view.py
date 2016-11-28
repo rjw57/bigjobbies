@@ -31,6 +31,9 @@ def submit():
     if len(missing) > 0:
         return render_template('needimage.html', missing=missing)
 
+    image = [im for im in engine.docker_images()
+             if any(t.endswith(':cuda') for t in im.get('RepoTags', []))][0]
+
     if request.method == 'POST':
         job_num, job_name = engine.submitjob(
             script='container-job.sh',
@@ -38,6 +41,7 @@ def submit():
             job_env={
                 'GIT_REPO': request.values['gitrepo'],
                 'GIT_BRANCH': request.values.get('gitbranch', ''),
+                'CONTAINER_TAG': image['Id'],
             }
         )
 
