@@ -1,7 +1,7 @@
 <h4>Pending</h4>
 {% with these_jobs = jobs | rejectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
-<table class="striped">
+<table class="striped responsive-table">
   <thead>
     <th>Number</th>
     <th>Name</th>
@@ -28,7 +28,7 @@
 
 <h4>Running</h4>
 {% if running_jobs %}
-<table class="striped">
+<table class="striped responsive-table">
   <thead>
     <th>Number</th>
     <th>Name</th>
@@ -55,13 +55,13 @@
 <h4>Completed</h4>
 {% with these_jobs = jobs | selectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
-<table class="striped">
+<table class="striped responsive-table">
   <thead>
     <th>Number</th>
     <th>Name</th>
     <th>Submission time</th>
     <th>Owner</th>
-    <th></th>
+    <th>Actions</th>
   </thead>
   <tbody>
     {% for job in (these_jobs | sort(attribute='sub_time', reverse=True))[:10] %}
@@ -72,7 +72,7 @@
         <td>{{ job.owner }}</td>
         <td>
           {% if job.has_log %}
-          <a href="{{ url_for('log', job_number=job.number) }}">Log</a>
+          <a href="{{ url_for('log', job_number=job.number) }}">View log</a>
           {% endif %}
         </td>
       </tr>

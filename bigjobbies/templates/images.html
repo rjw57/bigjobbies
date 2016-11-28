@@ -2,23 +2,25 @@
 
 {% block content %}
 
-<h1>Container images</h1>
+<h3>Container images</h3>
 
 <p>This page lists container images used by this application. You can build the
 container images at any time.</p>
 
+<p>
 <form method="POST" action="{{ url_for('build_images') }}">
   <button class="btn waves-effect waves-light" type="submit" name="action">
     <i class="material-icons right">build</i>
     Build container images
   </button>
 </form>
+</p>
 
 {% if images %}
 <table class="striped">
     <thead>
-      <th>Created at</th>
-      <th>Labels</th>
+      <th class="hide-on-small-only">Created at</th>
+      <th class="hide-on-small-only">Labels</th>
       <th>Tags</th>
       <th>Size</th>
       <th>Virtual size</th>
@@ -26,10 +28,10 @@ container images at any time.</p>
     <tbody>
     {% for im in images %}
     <tr>
-      <td style="vertical-align: top">
+      <td class="hide-on-small-only" style="vertical-align: top">
         {{ fromtimestamp(im.Created) }}
       </td>
-      <td style="vertical-align: top">
+      <td class="hide-on-small-only" style="vertical-align: top">
         {% for k, v in im.Labels.items() %}
         <div>{{ k }} = {{ v }}</div>
         {% endfor %}
@@ -57,7 +59,7 @@ container images at any time.</p>
 
 <div id="delete-modal" class="modal">
   <div class="modal-content">
-    <h4>Delete all container images</h1>
+    <h4>Delete all container images</h3>
 
     <p>This will <strong>delete</strong> all the containers associated with
     {{ config.SITE_NAME }}. Are you sure?

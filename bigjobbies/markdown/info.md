@@ -59,7 +59,7 @@ script:
 The containers have some restricted access to the local filesystem by way of a
 few well-known directories:
 
-<table class="bordered">
+<table class="bordered responsive-table">
   <thead><th>Path</th><th>Descriptions</th></thead>
   <tbody>
     <tr>

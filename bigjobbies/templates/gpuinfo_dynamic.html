@@ -17,7 +17,7 @@
       {{ gpu.product_name }}
     </div>
 
-    <table>
+    <table class="responsive-table">
       <thead>
         <tr>
           <th>Memory usage</th>
@@ -46,30 +46,6 @@
         </tr>
       </tbody>
     </table>
-
-    {% if gpu.processes.process_info %}
-    <div class="card-title">Process table</div>
-    <table>
-      <thead>
-        <tr>
-          <th>PID</th>
-          <th>Type</th>
-          <th>Name</th>
-          <th>Used memory</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for process in gpu.processes.process_info %}
-        <tr>
-          <td>{{ process.pid }}</td>
-          <td>{{ process.type }}</td>
-          <td>{{ process.process_name }}</td>
-          <td>{{ process.used_memory }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
   </div>
 </div>
 {% endfor %}
