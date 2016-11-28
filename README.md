@@ -14,7 +14,7 @@ Then install the application and [gunicorn](http://gunicorn.org/) web
 application runner:
 
 ```console
-pip install gunicorn git+https://github.com/rjw57/bigjobbies#egg=bigjobbies
+pip install --upgrade gunicorn git+https://github.com/rjw57/bigjobbies#egg=bigjobbies
 ```
 
 Then start the application server. (If ``gunicorn`` complains about port 8000
