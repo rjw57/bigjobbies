@@ -46,6 +46,8 @@ mkdir /repo
 chown worker:worker /repo
 git_cmd="git clone --progress --depth=1 --recursive ${clone_args} '${GIT_REPO}' /repo"
 logcmd "${git_cmd}" su -c "${git_cmd}" worker
+git_cmd="git --git-dir=/repo show-ref --head"
+logcmd "${git_cmd}" su -c "${git_cmd}" worker
 
 config_file=/repo/.jobbies.yaml
 jobbieget="$PWD/jobbieget.py"
