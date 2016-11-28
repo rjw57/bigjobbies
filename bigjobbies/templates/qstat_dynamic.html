@@ -1,4 +1,4 @@
-<h4>Pending</h4>
+<h5>Pending</h5>
 {% with these_jobs = jobs | rejectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
 <table class="striped responsive-table">
@@ -26,7 +26,7 @@
 {% endif %}
 {% endwith %}
 
-<h4>Running</h4>
+<h5>Running</h5>
 {% if running_jobs %}
 <table class="striped responsive-table">
   <thead>
@@ -52,7 +52,7 @@
 <p>There are no running jobs.</p>
 {% endif %}
 
-<h4>Completed</h4>
+<h5>Completed</h5>
 {% with these_jobs = jobs | selectattr('state', 'equalto', 'zombie') | list %}
 {% if these_jobs %}
 <table class="striped responsive-table">
