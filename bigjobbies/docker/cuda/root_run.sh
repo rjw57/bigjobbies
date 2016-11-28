@@ -9,9 +9,8 @@
 # access/move/delete them afterwards. If everything created by the job were
 # owned by root then that would be awkward afterwards.
 #
-# The script also reads the "apt-packages.txt" file in the project directory. If
-# this file exists it lists packages, one per line, which should be installed
-# via apt into the container before passing control to the unprivileged script.
+# The script also reads and installs packages specified in the configuration
+# file.
 
 # Exit on first error
 set -e

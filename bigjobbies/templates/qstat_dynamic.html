@@ -4,6 +4,7 @@
 <table class="striped">
   <thead>
     <th>Number</th>
+    <th>Name</th>
     <th>State</th>
     <th>Submission time</th>
     <th>Owner</th>
@@ -12,6 +13,7 @@
     {% for job in these_jobs | sort(attribute='sub_time', reverse=True) %}
       <tr>
         <td>{{ job.number }}</td>
+        <td>{{ job.name }}</td>
         <td>{{ job.state }}</td>
         <td>{{ job.sub_time }}</td>
         <td>{{ job.owner }}</td>
@@ -29,6 +31,7 @@
 <table class="striped">
   <thead>
     <th>Number</th>
+    <th>Name</th>
     <th>Queue</th>
     <th>Start time</th>
     <th>Owner</th>
@@ -37,6 +40,7 @@
 {% for job in running_jobs %}
   <tr>
     <td>{{ job.number }}</td>
+    <td>{{ job.name }}</td>
     <td>{{ job.queue }}</td>
     <td>{{ job.start_time }}</td>
     <td>{{ job.owner }}</td>
@@ -54,6 +58,7 @@
 <table class="striped">
   <thead>
     <th>Number</th>
+    <th>Name</th>
     <th>Submission time</th>
     <th>Owner</th>
     <th></th>
@@ -62,6 +67,7 @@
     {% for job in (these_jobs | sort(attribute='sub_time', reverse=True))[:10] %}
       <tr>
         <td>{{ job.number }}</td>
+        <td>{{ job.name }}</td>
         <td>{{ job.sub_time }}</td>
         <td>{{ job.owner }}</td>
         <td>

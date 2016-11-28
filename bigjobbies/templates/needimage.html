@@ -1,0 +1,32 @@
+{% extends "_layout/default.html" %}
+
+{% block content %}
+
+<h1>Container images required</h1>
+
+<p>This application makes use of Docker container images to function. Currently
+you're missing the following images:</p>
+
+<p>
+  {% for name in missing %}
+  <div class="chip">{{ name }}</div>
+  {% endfor %}
+</p>
+
+<p>
+You will need to ensure that your user account has access to Docker to build
+images. If this is the case then you can submit a job to build the images. You
+can check which images are already built in the
+<a href="{{ url_for('images') }}">list of images</a>. If you've already
+submitted a build job, you can check its progress in the
+<a href="{{ url_for('qstat') }}">job queue</a>.
+</p>
+
+<form method="POST" action="{{ url_for('build_images') }}">
+  <button class="btn waves-effect waves-light" type="submit" name="action">
+    <i class="material-icons right">build</i>
+    Build container images
+  </button>
+</form>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import os
 
@@ -20,16 +21,53 @@ def log_path(job_number):
     else:
         return None
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
+    return redirect(url_for('submit'))
+
+@app.route('/submit', methods=['GET', 'POST'])
+def submit():
+    missing = engine.missing_images()
+    if len(missing) > 0:
+        return render_template('needimage.html', missing=missing)
+
     if request.method == 'POST':
         job_num, job_name = engine.submitjob(
-            gitrepo=request.values['gitrepo'], **request.values
+            script='container-job.sh',
+            name='Container job from {}'.format(request.values['gitrepo']),
+            job_env={
+                'GIT_REPO': request.values['gitrepo'],
+                'GIT_BRANCH': request.values.get('gitbranch', ''),
+            }
         )
 
         flash('Job #{} submitted'.format(job_num))
         return redirect(url_for('qstat'))
-    return render_template('index.html')
+    return render_template('submit.html')
+
+@app.route('/images')
+def images():
+    return render_template(
+        'images.html', images=engine.docker_images(),
+        fromtimestamp=datetime.datetime.fromtimestamp)
+
+@app.route('/images/build', methods=['POST'])
+def build_images():
+    if request.method != 'POST':
+        abort(403) # Forbidden
+
+    job_num, job_name = engine.submitjob(
+        script='build-containers.sh',
+        name=r'Build container images',
+        job_env={
+            'CONTAINER_DIR': os.path.join(app.root_path, 'docker'),
+            'IMAGE_TAG': current_app.config['IMAGE_TAG'],
+            'IMAGE_PREFIX': current_app.config['IMAGE_PREFIX'],
+        },
+    )
+
+    flash('Job #{} submitted'.format(job_num))
+    return redirect(url_for('qstat'))
 
 def parse_qstat():
     qstat_out = sge.qstat()
@@ -45,6 +83,7 @@ def parse_qstat():
         running_jobs.append(dict(
             queue=queue.name,
             number=job_list.JB_job_number,
+            name=job_list.JB_name,
             state='running',
             owner=job_list.JB_owner,
             start_time=date_parse(job_list.JAT_start_time.text),
@@ -55,6 +94,7 @@ def parse_qstat():
             number=job.JB_job_number,
             state=job.get('state'),
             owner=job.JB_owner,
+            name=job.JB_name,
             sub_time=date_parse(job.JB_submission_time.text),
             has_log=log_path(job.JB_job_number) is not None,
         )

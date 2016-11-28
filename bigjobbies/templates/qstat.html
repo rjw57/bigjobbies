@@ -22,10 +22,10 @@ $(document).ready(function(){
 function refresh() {
   $.get('{{ url_for('qstat_update') }}', function(data) {
     $('#dynamic').html(data);
-    window.setTimeout(refresh, 10000);
+    window.setTimeout(refresh, 5000);
   });
 }
-window.setTimeout(refresh, 10000);
+window.setTimeout(refresh, 5000);
 
 });
 </script>

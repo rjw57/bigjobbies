@@ -13,9 +13,15 @@ def qstat():
 
 QSUB_PATTERN = re.compile(r'Your job ([0-9]+) \("([^"]*)"\) has been submitted')
 
-def qsub(job_script, extra_args=[]):
+def qsub(job_script, name=None, extra_args=[]):
+    if name is None:
+        name = job_script
+
+    # Sanitise name (see sge_types(1) for "name")
+    name = re.sub(r'(\\n)|(\\t)|(\\r)|[/:@\\\*\?]', '_', name)
+
     sub_output = subprocess.check_output(
-        ['qsub'] + extra_args + [job_script]
+        ['qsub'] + extra_args + ['-N', name, job_script]
     ).decode('utf8')
 
     m = QSUB_PATTERN.search(sub_output)

@@ -1,0 +1,54 @@
+{% extends "_layout/default.html" %}
+
+{% block content %}
+
+<h1>Container images</h1>
+
+<p>This page lists container images used by this application. You can build the
+container images at any time.</p>
+
+<form method="POST" action="{{ url_for('build_images') }}">
+  <button class="btn waves-effect waves-light" type="submit" name="action">
+    <i class="material-icons right">build</i>
+    Build container images
+  </button>
+</form>
+
+{% if images %}
+<table class="striped">
+    <thead>
+      <th>Created at</th>
+      <th>Labels</th>
+      <th>Tags</th>
+      <th>Size</th>
+      <th>Virtual size</th>
+    </thead>
+    <tbody>
+    {% for im in images %}
+    <tr>
+      <td style="vertical-align: top">
+        {{ fromtimestamp(im.Created) }}
+      </td>
+      <td style="vertical-align: top">
+        {% for k, v in im.Labels.items() %}
+        <div>{{ k }} = {{ v }}</div>
+        {% endfor %}
+      </td>
+      <td style="vertical-align: top">
+        {% for t in im.RepoTags %}<div>{{ t }}</div>{% endfor %}
+      </td>
+      <td style="vertical-align: top">
+        {{ im.Size | filesizeformat }}
+      </td>
+      <td style="vertical-align: top">
+        {{ im.VirtualSize | filesizeformat }}
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>There are no Big Jobbies Docker images on the machine.</p>
+{% endif %}
+
+{% endblock %}
