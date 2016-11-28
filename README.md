@@ -37,3 +37,14 @@ ssh -fN -L5000:localhost:8000 yoshi
 You can now navigate to [localhost:5000](http://localhost:5000/) in your browser
 and get started.
 
+### Other ways of port forwarding
+
+#### ngrok
+
+[ngrok](https://ngrok.com/) can be used to forward the application to machines
+without SSH installed. For example, on the compute server, download ``ngrok``
+and use the following command:
+
+```console
+./ngrok http --bind-tls true 8000
+```

@@ -23,7 +23,8 @@ def submitjob(script, name=None, job_env={}):
     if name is None:
         name = script
 
-    log_dir = current_app.config['LOG_DIR']
+    log_dir = os.path.join(
+        current_app.instance_path, current_app.config['LOG_DIR'])
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 

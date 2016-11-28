@@ -14,7 +14,8 @@ from . import sge
 from . import engine
 
 def log_path(job_number):
-    log_dir = current_app.config['LOG_DIR']
+    log_dir = os.path.join(
+        current_app.instance_path, current_app.config['LOG_DIR'])
     path  = os.path.join(log_dir, '{}.log'.format(job_number))
     if os.path.exists(path):
         return path

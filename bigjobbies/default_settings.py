@@ -1,7 +1,9 @@
 import getpass
 import os
 
+# Relative to instance_path
 LOG_DIR='logs'
+
 SECRET_KEY=os.urandom(24)
 
 APP_PREFIX='bigjobbies'
