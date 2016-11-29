@@ -1,3 +1,4 @@
+import collections
 import getpass
 import os
 import shutil
@@ -10,7 +11,15 @@ from lxml import objectify
 
 from . import sge
 
-IMAGE_SUB_TYPES=['cuda']
+JobSpec = collections.namedtuple(
+    'JobSpec', 'id description job_script image_subtype')
+
+JOB_SPECS = [
+    JobSpec('cpu_only', 'CPU only', 'cpu-job.sh', 'cpu'),
+    JobSpec('gpu_cuda', 'CUDA (GPU)', 'cuda-job.sh', 'cuda'),
+]
+
+IMAGE_SUB_TYPES = list(set([js.image_subtype for js in JOB_SPECS]))
 
 def gpuinfo():
     return objectify.fromstring(
@@ -73,10 +82,10 @@ def missing_images():
 
     """
     all_types = []
-    sub_type_label = '{}sub_type'.format(current_app.config['LABEL_NS'])
+    type_label = '{}type'.format(current_app.config['LABEL_NS'])
     for im in docker_images():
         labels = im.get('Labels', {})
-        if labels is None or sub_type_label not in labels:
+        if labels is None or type_label not in labels:
             continue
-        all_types.append(labels[sub_type_label])
+        all_types.append(labels[type_label])
     return list(set(IMAGE_SUB_TYPES).difference(all_types))

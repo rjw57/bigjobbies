@@ -1,15 +1,6 @@
 #$ -S /bin/bash
 #$ -l queue-priority=cuda
-#
-# Note: the "-v" option to qsub can be used to define the git repo.
-#    qsub -v GIT_REPO=<git url> <job>
-#
-# The GIT_BRANCH environment variable can be used to checkout something other
-# than the default branch.
-#
-# Extra options to docker run can be specified via the DOCKER_RUN_ARGS
-# environment variable.
-#
+
 if [ -z "${X_SGE_CUDA_DEVICE}" ]; then
 	cat >&2 <<EOL
 -- No GPU device was specified in the grid engine configuration. Check that you

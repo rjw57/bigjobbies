@@ -1,4 +1,4 @@
-FROM nvidia/cuda:cudnn-ubuntu14.04
+FROM ubuntu:14.04
 MAINTAINER Rich Wareham <rjw57@cam.ac.uk>
 
 # /scratch on Yoshi will be mounted here read only
@@ -20,7 +20,7 @@ ARG USER
 
 LABEL ${LABEL_NS}worker=1 \
     ${LABEL_NS}user=${USER} \
-    ${LABEL_NS}type=cuda \
+    ${LABEL_NS}type=cpu \
     ${LABEL_NS}os=ubuntu14.04
 
 # Copy the run script into the container

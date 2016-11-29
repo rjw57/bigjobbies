@@ -32,20 +32,28 @@ def submit():
     if len(missing) > 0:
         return render_template('needimage.html', missing=missing)
 
-    sub_type_label = '{}sub_type'.format(current_app.config['LABEL_NS'])
-    candidate_images = [
-        im for im in engine.docker_images()
-        if im.get('Labels', {}).get(sub_type_label, '') == 'cuda'
-    ]
-    if len(candidate_images) == 0:
-        abort(500)
-
-    image = candidate_images[0]
-
     if request.method == 'POST':
+        job_spec_id = request.values.get('jobspecid', engine.JOB_SPECS[0].id)
+        job_spec = None
+        for js in engine.JOB_SPECS:
+            if js.id != job_spec_id:
+                continue
+            job_spec = js
+        if job_spec is None:
+            abort(400)
+
+        type_label = '{}type'.format(current_app.config['LABEL_NS'])
+        candidate_images = [
+            im for im in engine.docker_images()
+            if im.get('Labels', {}).get(type_label, '') == job_spec.image_subtype
+        ]
+        if len(candidate_images) == 0:
+            abort(500)
+
+        image = candidate_images[0]
         job_num, job_name = engine.submitjob(
-            script='container-job.sh',
-            name='Container job from {}'.format(request.values['gitrepo']),
+            script=job_spec.job_script,
+            name='{} job from {}'.format(job_spec.description, request.values['gitrepo']),
             job_env={
                 'GIT_REPO': request.values['gitrepo'],
                 'GIT_BRANCH': request.values.get('gitbranch', ''),
@@ -55,7 +63,7 @@ def submit():
 
         flash('Job #{} submitted'.format(job_num))
         return redirect(url_for('qstat'))
-    return render_template('submit.html')
+    return render_template('submit.html', job_specs=engine.JOB_SPECS)
 
 @app.route('/images')
 def images():
@@ -98,16 +106,17 @@ def parse_qstat():
             job_list = queue.job_list
         except AttributeError:
             continue
-        if job_list is None or job_list.get('state', '') != 'running':
+        if job_list is None:
             continue
-        running_jobs.append(dict(
+
+        running_jobs.extend([dict(
             queue=queue.name,
-            number=job_list.JB_job_number,
-            name=job_list.JB_name,
-            state='running',
-            owner=job_list.JB_owner,
-            start_time=date_parse(job_list.JAT_start_time.text),
-        ))
+            number=job.JB_job_number,
+            name=job.JB_name,
+            state=job.get('state', ''),
+            owner=job.JB_owner,
+            start_time=date_parse(job.JAT_start_time.text),
+        ) for job in job_list])
 
     def parse_job(job):
         return dict(

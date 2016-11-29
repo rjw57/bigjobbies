@@ -29,7 +29,7 @@ if [ -z "${CONTAINER_DIR}" ]; then
         exit 1
 fi
 
-CONTAINERS="cuda"
+CONTAINERS="cuda cpu"
 
 for container in $CONTAINERS; do
         CONTAINER_TAG="${APP_PREFIX}/${USER}:${container}"
