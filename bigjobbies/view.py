@@ -8,6 +8,7 @@ from flask import (
     redirect, flash, url_for, Response
 )
 import markdown
+import psutil
 
 from .app import app
 from . import sge
@@ -143,15 +144,37 @@ def qstat():
 def qstat_update():
     return render_template('qstat_dynamic.html', **parse_qstat())
 
+# HACK: this is necessary for cpu_percent to work properly. The percentage is
+# calculated between the instances where cpu_percent is called.
+PSUTIL_CACHE = {}
+
+def render_gpuinfo_template(template_name):
+    smi = engine.gpuinfo()
+
+    # Collate process table
+    processes = []
+    for gpu in smi.iterchildren('gpu'):
+        for info in gpu.processes.iterchildren('process_info'):
+            psu = PSUTIL_CACHE.get(info.pid, (None, psutil.Process(info.pid)))[1]
+            PSUTIL_CACHE[info.pid] = (datetime.datetime.utcnow(), psu)
+            processes.append({
+                'gpu': gpu, 'info': info, 'psutil': psu,
+            })
+
+    # Clean stale entries in PSUTIL_CACHE
+    for pid, (last_used, _) in list(PSUTIL_CACHE.items()):
+        if (datetime.datetime.utcnow() - last_used).total_seconds() > 10*60:
+            del PSUTIL_CACHE[pid]
+
+    return render_template(template_name, smi=smi, processes=processes)
+
 @app.route('/gpuinfo')
 def gpuinfo():
-    return render_template(
-        'gpuinfo.html', smi=engine.gpuinfo())
+    return render_gpuinfo_template('gpuinfo.html')
 
 @app.route('/gpuinfo/update')
 def gpuinfo_update():
-    return render_template(
-        'gpuinfo_dynamic.html', smi=engine.gpuinfo())
+    return render_gpuinfo_template('gpuinfo_dynamic.html')
 
 PREFIXES = {
     'O:': 'stdout', 'E:': 'stderr', 'I:': 'info', 'C:': 'command',

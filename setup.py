@@ -8,6 +8,7 @@ setup(
         'flask',
         'lxml',
         'markdown',
+        'psutil',
         'python-dateutil',
     ],
     package_data={

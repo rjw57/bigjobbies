@@ -2,8 +2,8 @@
 <div class="card grey lighten-4">
   <div class="card-content">
     <div class="card-title">
-      Card {{ loop.index0 }}:
       {{ gpu.product_name }}
+      ({{ gpu.get('id') }})
     </div>
 
     <table>
@@ -39,3 +39,35 @@
 </div>
 {% endfor %}
 
+{% if processes | length %}
+<div class="card grey lighten-4">
+  <div class="card-content">
+  <div class="card-title">Process table</div>
+  <table>
+    <thead>
+      <tr>
+        <th>GPU</th>
+        <th>PID</th>
+        <th>Owner</th>
+        <th>CPU usage</th>
+        <th>Command line</th>
+        <th>GPU memory</th>
+        <th>System memory</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in processes %}
+      <tr>
+        <td>{{ p.gpu.get('id') }}</td>
+        <td>{{ p.info.pid }}</td>
+        <td>{{ p.psutil.username() }}</td>
+        <td>{{ p.psutil.cpu_percent() | int }} %</td>
+        <td>{{ p.psutil.cmdline() | join(' ') }}</td>
+        <td>{{ p.info.used_memory }}</td>
+        <td>{{ p.psutil.memory_info().rss | filesizeformat(binary=True) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
