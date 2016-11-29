@@ -1,7 +1,5 @@
 #$ -S /bin/bash
 #$ -l queue-priority=cuda
-#$ -e '$JOB_NAME.$JOB_ID.log'
-#$ -o '$JOB_NAME.$JOB_ID.log'
 #
 # Note: the "-v" option to qsub can be used to define the git repo.
 #    qsub -v GIT_REPO=<git url> <job>
@@ -46,6 +44,7 @@ DOCKER_USER_GID=$(id -g)
 DOCKER_USER_GID=${DOCKER_USER_GID:-${DOCKER_USER_UID}}
 
 echo "S:Launching container"
+echo "I:Container image: ${CONTAINER_TAG}"
 echo "I:GIT_REPO=${GIT_REPO}"
 echo "I:GIT_BRANCH=${GIT_BRANCH}"
 echo "I:CONTAINER_TAG=${CONTAINER_TAG}"

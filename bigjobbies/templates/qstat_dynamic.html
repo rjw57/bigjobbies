@@ -8,6 +8,7 @@
     <th>State</th>
     <th>Submission time</th>
     <th>Owner</th>
+    <th>Actions</th>
   </thead>
   <tbody>
     {% for job in these_jobs | sort(attribute='sub_time', reverse=True) %}
@@ -17,6 +18,9 @@
         <td>{{ job.state }}</td>
         <td>{{ job.sub_time }}</td>
         <td>{{ job.owner }}</td>
+        <td>
+          <a href="{{ url_for('delete_job', job_number=job.number) }}">Delete</a>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

@@ -32,12 +32,12 @@ container images at any time.</p>
         {{ fromtimestamp(im.Created) }}
       </td>
       <td class="hide-on-small-only" style="vertical-align: top">
-        {% for k, v in im.Labels.items() %}
+        {% for k, v in im.Labels.items() | sort %}
         <div>{{ k }} = {{ v }}</div>
         {% endfor %}
       </td>
       <td style="vertical-align: top">
-        {% for t in im.RepoTags %}<div>{{ t }}</div>{% endfor %}
+        {% for t in im.RepoTags | sort %}<div>{{ t }}</div>{% endfor %}
       </td>
       <td style="vertical-align: top">
         {{ im.Size | filesizeformat }}

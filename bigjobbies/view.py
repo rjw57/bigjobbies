@@ -32,8 +32,15 @@ def submit():
     if len(missing) > 0:
         return render_template('needimage.html', missing=missing)
 
-    image = [im for im in engine.docker_images()
-             if any(t.endswith(':cuda') for t in im.get('RepoTags', []))][0]
+    sub_type_label = '{}sub_type'.format(current_app.config['LABEL_NS'])
+    candidate_images = [
+        im for im in engine.docker_images()
+        if im.get('Labels', {}).get(sub_type_label, '') == 'cuda'
+    ]
+    if len(candidate_images) == 0:
+        abort(500)
+
+    image = candidate_images[0]
 
     if request.method == 'POST':
         job_num, job_name = engine.submitjob(
@@ -66,8 +73,8 @@ def build_images():
         name=r'Build container images',
         job_env={
             'CONTAINER_DIR': os.path.join(app.root_path, 'docker'),
-            'IMAGE_TAG': current_app.config['IMAGE_TAG'],
-            'IMAGE_PREFIX': current_app.config['IMAGE_PREFIX'],
+            'LABEL_NS': current_app.config['LABEL_NS'],
+            'APP_PREFIX': current_app.config['APP_PREFIX'],
         },
     )
 
@@ -141,6 +148,11 @@ PREFIXES = {
     'O:': 'stdout', 'E:': 'stderr', 'I:': 'info', 'C:': 'command',
     'S:': 'section',
 }
+
+@app.route('/delete/<int:job_number>')
+def delete_job(job_number):
+    sge.qdel(job_number)
+    return redirect(url_for('qstat'))
 
 @app.route('/log/<int:job_number>')
 def log(job_number):

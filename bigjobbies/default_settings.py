@@ -1,4 +1,4 @@
-import getpass
+import socket
 import os
 
 # Relative to instance_path
@@ -6,12 +6,11 @@ LOG_DIR='logs'
 
 SECRET_KEY=os.urandom(24)
 
+# URL and filesystem-safe prefix for temporary files, etc.
 APP_PREFIX='bigjobbies'
 
 SITE_NAME='Big Jobbies'
 
-# Images created by this application are given this tag
-IMAGE_TAG='bigjobbies:{}'.format(getpass.getuser())
-
-# Images are taged based on their container name and given this prefix.
-IMAGE_PREFIX='bigjobbiesworker'
+# "Namespace" which container labels used by this application live in. This
+# should be a "reverse DNS" style name WHICH ENDS IN A FULL STOP
+LABEL_NS='.'.join(socket.getfqdn().split('.')[::-1] + [APP_PREFIX])+'.'

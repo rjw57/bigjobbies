@@ -31,3 +31,6 @@ def qsub(job_script, name=None, extra_args=[]):
     g = m.groups()
     return int(g[0]), g[1]
 
+def qdel(job_number, extra_args=[]):
+    subprocess.check_call(['qdel'] + extra_args + [str(int(job_number))])
+

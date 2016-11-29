@@ -12,6 +12,17 @@ RUN apt-get -y update && \
     apt-get -y install git build-essential python python3 python3-pip \
         python3-yaml python3-docopt
 
+# This argument is the "namespace" that all the labels should live in for the
+# bigjobbies containers in general.
+ARG LABEL_NS=com.richwareham.bigjobbies.
+
+ARG USER
+
+LABEL ${LABEL_NS}worker=1 \
+    ${LABEL_NS}user=${USER} \
+    ${LABEL_NS}sub_type=cuda \
+    ${LABEL_NS}os=ubuntu14.04
+
 # Copy the run script into the container
 COPY *.sh *.py ./
 ENTRYPOINT ./root_run.sh

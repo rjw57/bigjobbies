@@ -10,14 +10,11 @@ from lxml import objectify
 
 from . import sge
 
-def image_tags():
-    return ['{}:{}'.format(current_app.config['IMAGE_PREFIX'], n) for n in [
-        'cuda',
-    ]]
+IMAGE_SUB_TYPES=['cuda']
 
 def gpuinfo():
-    return objectify.fromstring(subprocess.check_output([
-        'nvidia-smi', '-q', '-x']))
+    return objectify.fromstring(
+        subprocess.check_output(['nvidia-smi', '-q', '-x']))
 
 def submitjob(script, name=None, job_env={}):
     if name is None:
@@ -48,14 +45,22 @@ def submitjob(script, name=None, job_env={}):
 
 def docker_images():
     """Get a set of docker image dicts (see docker-py) which correspond to this
-    app. Returns only images which are tagged with IMAGE_TAG.
+    app. Returns only images which are marked as worker images.
 
     """
     cli = docker.Client()
-    tag = current_app.config['IMAGE_TAG']
-    tag_set = set(image_tags())
-    return [im for im in cli.images()
-            if tag in im.get('RepoTags', [])]
+    worker_label = '{}worker'.format(current_app.config['LABEL_NS'])
+    user_label = '{}user'.format(current_app.config['LABEL_NS'])
+    def is_our_image(im):
+        labels = im.get('Labels', {})
+        if labels is None or worker_label not in labels:
+            return False
+        if labels.get(user_label) != getpass.getuser():
+            return False
+        tag_prefix = '{}/{}:'.format(
+            current_app.config['APP_PREFIX'], getpass.getuser())
+        return any(t.startswith(tag_prefix) for t in im.get('RepoTags', []))
+    return [im for im in cli.images() if is_our_image(im)]
 
 def delete_images():
     cli = docker.Client()
@@ -67,7 +72,11 @@ def missing_images():
     yet been built.)
 
     """
-    all_tags = []
+    all_types = []
+    sub_type_label = '{}sub_type'.format(current_app.config['LABEL_NS'])
     for im in docker_images():
-        all_tags.extend(im.get('RepoTags', []))
-    return set(image_tags()).difference(all_tags)
+        labels = im.get('Labels', {})
+        if labels is None or sub_type_label not in labels:
+            continue
+        all_types.append(labels[sub_type_label])
+    return list(set(IMAGE_SUB_TYPES).difference(all_types))

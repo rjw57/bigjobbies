@@ -1,5 +1,3 @@
-#!/bin/bash
-#$ -l queue-priority=cuda
 #$ -S /bin/bash
 set -e
 
@@ -27,15 +25,18 @@ error()( echo "E:$*" )
 section()( echo "S:$*" )
 
 if [ -z "${CONTAINER_DIR}" ]; then
-	error "CONTAINER_DIR was not set"
-	exit 1
+        error "CONTAINER_DIR was not set"
+        exit 1
 fi
 
 CONTAINERS="cuda"
 
 for container in $CONTAINERS; do
-	CONTAINER_NAME="${IMAGE_PREFIX}:${container}"
-	section "Building container ${CONTAINER_NAME}"
-	wrap docker build -t "${IMAGE_TAG}" -t "${CONTAINER_NAME}" ${CONTAINER_DIR}/${container}
-	info "successfully built container ${CONTAINER_NAME}"
+        CONTAINER_TAG="${APP_PREFIX}/${USER}:${container}"
+        section "Building container ${CONTAINER_TAG}"
+        wrap docker build -t "${CONTAINER_TAG}" \
+            --build-arg LABEL_NS=${LABEL_NS} \
+            --build-arg USER=${USER} \
+            ${CONTAINER_DIR}/${container}
+        info "successfully built container ${CONTAINER_TAG}"
 done
