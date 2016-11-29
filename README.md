@@ -17,6 +17,9 @@ application runner:
 pip install --upgrade gunicorn git+https://github.com/rjw57/bigjobbies#egg=bigjobbies
 ```
 
+You can re-run this ``pip install`` command, after activating the virtualenv, at
+any time to update your application install.
+
 Then start the application server. (If ``gunicorn`` complains about port 8000
 already being in use add the ``-b localhost:<portnumber>`` option with a
 different port number.)
