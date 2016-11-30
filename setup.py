@@ -14,6 +14,7 @@ setup(
     package_data={
         'bigjobbies': [
             'docker/*/*', 'scripts/*', 'templates/*', 'templates/*/*',
+            'markdown/*',
         ],
     },
 )
