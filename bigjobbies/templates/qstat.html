@@ -20,7 +20,7 @@ no need to refresh as this page updates itself automatically.</p>
 $(document).ready(function(){
 
 function refresh() {
-  $.get('{{ url_for('qstat_update') }}', function(data) {
+  $.get('{{ url_for('ui.qstat_update') }}', function(data) {
     $('#dynamic').html(data);
     window.setTimeout(refresh, 5000);
   });

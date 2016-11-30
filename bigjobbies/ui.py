@@ -4,15 +4,17 @@ import os
 
 from dateutil.parser import parse as date_parse
 from flask import (
-    abort, request, render_template, current_app, Markup,
+    Blueprint, abort, request, render_template, current_app, Markup,
     redirect, flash, url_for, Response
 )
 import markdown
 import psutil
 
-from .app import app
+from . import auth
 from . import sge
 from . import engine
+
+ui = Blueprint('ui', __name__)
 
 def log_path(job_number):
     log_dir = os.path.join(
@@ -23,11 +25,14 @@ def log_path(job_number):
     else:
         return None
 
-@app.route('/')
-def index():
-    return redirect(url_for('submit'))
+# PIN Number auth
+ui.before_request(auth.check)
 
-@app.route('/submit', methods=['GET', 'POST'])
+@ui.route('/')
+def index():
+    return redirect(url_for('ui.submit'))
+
+@ui.route('/submit', methods=['GET', 'POST'])
 def submit():
     missing = engine.missing_images()
     if len(missing) > 0:
@@ -63,16 +68,16 @@ def submit():
         )
 
         flash('Job #{} submitted'.format(job_num))
-        return redirect(url_for('qstat'))
+        return redirect(url_for('ui.qstat'))
     return render_template('submit.html', job_specs=engine.JOB_SPECS)
 
-@app.route('/images')
+@ui.route('/images')
 def images():
     return render_template(
         'images.html', images=engine.docker_images(),
         fromtimestamp=datetime.datetime.fromtimestamp)
 
-@app.route('/images/build', methods=['POST'])
+@ui.route('/images/build', methods=['POST'])
 def build_images():
     if request.method != 'POST':
         abort(403) # Forbidden
@@ -88,15 +93,15 @@ def build_images():
     )
 
     flash('Job #{} submitted'.format(job_num))
-    return redirect(url_for('qstat'))
+    return redirect(url_for('ui.qstat'))
 
-@app.route('/images/delete', methods=['POST'])
+@ui.route('/images/delete', methods=['POST'])
 def delete_images():
     if request.method != 'POST':
         abort(403) # Forbidden
 
     engine.delete_images()
-    return redirect(url_for('images'))
+    return redirect(url_for('ui.images'))
 
 def parse_qstat():
     qstat_out = sge.qstat()
@@ -136,11 +141,11 @@ def parse_qstat():
 
     return dict(jobs=jobs, running_jobs=running_jobs)
 
-@app.route('/qstat')
+@ui.route('/qstat')
 def qstat():
     return render_template('qstat.html', **parse_qstat())
 
-@app.route('/qstat/update')
+@ui.route('/qstat/update')
 def qstat_update():
     return render_template('qstat_dynamic.html', **parse_qstat())
 
@@ -168,11 +173,11 @@ def render_gpuinfo_template(template_name):
 
     return render_template(template_name, smi=smi, processes=processes)
 
-@app.route('/gpuinfo')
+@ui.route('/gpuinfo')
 def gpuinfo():
     return render_gpuinfo_template('gpuinfo.html')
 
-@app.route('/gpuinfo/update')
+@ui.route('/gpuinfo/update')
 def gpuinfo_update():
     return render_gpuinfo_template('gpuinfo_dynamic.html')
 
@@ -181,12 +186,12 @@ PREFIXES = {
     'S:': 'section',
 }
 
-@app.route('/delete/<int:job_number>')
+@ui.route('/delete/<int:job_number>')
 def delete_job(job_number):
     sge.qdel(job_number)
-    return redirect(url_for('qstat'))
+    return redirect(url_for('ui.qstat'))
 
-@app.route('/log/<int:job_number>')
+@ui.route('/log/<int:job_number>')
 def log(job_number):
     path = log_path(job_number)
     if path is None:
@@ -214,7 +219,7 @@ def log(job_number):
     return render_template(
         'log.html', job_number=job_number, sections=sections)
 
-@app.route('/log/<int:job_number>/raw')
+@ui.route('/log/<int:job_number>/raw')
 def log_raw(job_number):
     path = log_path(job_number)
     if path is None:
@@ -222,7 +227,7 @@ def log_raw(job_number):
     with open(path) as f:
         return Response(f.read(), mimetype='text/plain')
 
-@app.route('/help')
+@ui.route('/help')
 def info():
     with current_app.open_resource('markdown/info.md') as f:
         content = Markup(markdown.markdown(f.read().decode('utf8')))

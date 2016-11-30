@@ -6,9 +6,11 @@ setup(
     install_requires=[
         'docker-py',
         'flask',
+        'future',
         'lxml',
         'markdown',
         'psutil',
+        'pyjwt',
         'python-dateutil',
     ],
     package_data={

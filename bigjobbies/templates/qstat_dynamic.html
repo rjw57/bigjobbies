@@ -19,7 +19,7 @@
         <td>{{ job.sub_time }}</td>
         <td>{{ job.owner }}</td>
         <td>
-          <a href="{{ url_for('delete_job', job_number=job.number) }}">Delete</a>
+          <a href="{{ url_for('ui.delete_job', job_number=job.number) }}">Delete</a>
         </td>
       </tr>
     {% endfor %}
@@ -78,7 +78,7 @@
         <td>{{ job.owner }}</td>
         <td>
           {% if job.has_log %}
-          <a href="{{ url_for('log', job_number=job.number) }}">View log</a>
+          <a href="{{ url_for('ui.log', job_number=job.number) }}">View log</a>
           {% endif %}
         </td>
       </tr>

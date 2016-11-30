@@ -17,12 +17,12 @@ you're missing the following images:</p>
 You will need to ensure that your user account has access to Docker to build
 images. If this is the case then you can submit a job to build the images. You
 can check which images are already built in the
-<a href="{{ url_for('images') }}">list of images</a>. If you've already
+<a href="{{ url_for('ui.images') }}">list of images</a>. If you've already
 submitted a build job, you can check its progress in the
-<a href="{{ url_for('qstat') }}">job queue</a>.
+<a href="{{ url_for('ui.qstat') }}">job queue</a>.
 </p>
 
-<form method="POST" action="{{ url_for('build_images') }}">
+<form method="POST" action="{{ url_for('ui.build_images') }}">
   <button class="btn waves-effect waves-light" type="submit" name="action">
     <i class="material-icons right">build</i>
     Build container images

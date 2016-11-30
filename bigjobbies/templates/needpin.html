@@ -1,0 +1,21 @@
+{% extends "_layout/default.html" %}
+{% block content %}
+<h1>PIN required</h1>
+
+<p>Enter your authorisation PIN to continue.</p>
+
+<form method="POST" action="{{ url_for('auth.login') }}">
+  <p><div class="input-field">
+    <input name="pin" id="pin" type="text">
+    <label for="pin">Pin</label>
+  </div></p>
+
+  <p><button class="btn waves-effect waves-light" type="submit" name="action">
+    <i class="material-icons right">send</i>
+    Log in
+  </button></p>
+
+  <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+{% endblock %}
